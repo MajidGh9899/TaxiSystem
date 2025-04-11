@@ -1,7 +1,7 @@
 package ir.maktab127.entities;
 
 public class Trip {
-    private static int idx=0;
+
     private int id;
     private Driver driver;
     private Passenger passenger;
@@ -10,7 +10,7 @@ public class Trip {
     private double price;
     private TripStatus tripStatus;
     public Trip(Passenger passenger,Location begin,Location destination){
-        this.id=idx++;
+
         this.passenger=passenger;
         this.driver=null;
         this.begin=begin;

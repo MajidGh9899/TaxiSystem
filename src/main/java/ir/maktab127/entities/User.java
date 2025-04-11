@@ -1,7 +1,7 @@
 package ir.maktab127.entities;
 
 public class User {
-    private   static int idx=0;
+
     private int id;
     private String name;
     private String userName;
@@ -47,7 +47,7 @@ public class User {
 
 
     public User(String userName,String password,String name ){
-        id=id++;
+
         this.name=name;
         this.userName=userName;
         this.password=password;

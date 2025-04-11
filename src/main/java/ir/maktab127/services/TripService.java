@@ -1,12 +1,17 @@
 package ir.maktab127.services;
 
-import entities.Driver;
-import entities.Location;
-import entities.Passenger;
-import entities.Trip;
+
+import ir.maktab127.entities.Driver;
+import ir.maktab127.entities.Location;
+import ir.maktab127.entities.Passenger;
+import ir.maktab127.entities.Trip;
+
+import java.sql.SQLException;
 
 public interface TripService {
-    Trip Create(Passenger passenger, Location begin, Location destination);
-    void setDriver(Trip trip,Driver driver);
+    Trip create(Passenger passenger, Location begin, Location destination);
+    void setDriver(Trip trip, Driver driver);
+    void getAllWaitingTrips() throws InterruptedException;
+    void acceptTrip(Driver driver) throws InterruptedException, SQLException;
 
 }
