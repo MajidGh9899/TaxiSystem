@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public interface TripService {
     Trip create(Passenger passenger, Location begin, Location destination);
     void setDriver(Trip trip, Driver driver);
-    void getAllWaitingTrips() throws InterruptedException;
+//    void getAllWaitingTrips() throws InterruptedException;
     void acceptTrip(Driver driver) throws InterruptedException, SQLException;
 
 }

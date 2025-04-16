@@ -20,26 +20,32 @@ public class TripRepositoryImpl extends RepositoryImpl implements TripRepository
     @Override
     public void save(Trip trip) throws SQLException {
 
-        try(PreparedStatement statement=connection.prepareStatement("insert into trip (passenger_id, driver_id, price, begin, destination,status) values (?,?,?,?,?,?)")){
+        try(PreparedStatement statement=connection.prepareStatement("insert into trip (passenger_id, price, begin, destination,status) values (?,?,?,?,?)")){
 
             statement.setInt(1,trip.getPassenger().getId());
 
-            statement.setInt(2,trip.getDriver().getId());
-            statement.setDouble(3,trip.getPrice());
+
+            statement.setDouble(2,trip.getPrice());
             try(PreparedStatement prep=connection.prepareStatement("insert into location (x, y) values (?,?) ", Statement.RETURN_GENERATED_KEYS )){
                 prep.setInt(1,trip.getBegin().getX());
                 prep.setInt(2,trip.getBegin().getY());
                 prep.executeUpdate();
                 ResultSet generatedKeys = prep.getGeneratedKeys();
-                statement.setInt(4,generatedKeys.getInt(1));
-                prep.setInt(1,trip.getDestination().getX());
-                prep.setInt(2,trip.getDestination().getY());
-                prep.executeUpdate();
+                if(generatedKeys.next()) {
+                    statement.setInt(3, generatedKeys.getInt(1));
+                }
+                    prep.setInt(1, trip.getDestination().getX());
+                    prep.setInt(2, trip.getDestination().getY());
+                    prep.executeUpdate();
                 generatedKeys = prep.getGeneratedKeys();
-                statement.setInt(5,generatedKeys.getInt(1));
+                if(generatedKeys.next()) {
+
+                statement.setInt(4,generatedKeys.getInt(1));
+                }
+
             }
 
-            statement.setString(6,trip.getTripStatus().name());
+            statement.setString(5,trip.getTripStatus().name());
             statement.executeUpdate();
 
 
