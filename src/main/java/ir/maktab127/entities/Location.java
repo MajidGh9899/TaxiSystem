@@ -1,7 +1,7 @@
 package ir.maktab127.entities;
 
 public class Location {
-    int id;
+    Long id;
     private int x;
     private int y;
     public Location(int x,int y){

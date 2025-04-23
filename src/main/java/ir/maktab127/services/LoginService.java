@@ -11,5 +11,5 @@ public interface LoginService {
     
    
     Driver driverLogin(String username, String password) throws SQLException;
-    void driverRegister(String username, String password, String name, String carName, String licensePlate);
+    Driver driverRegister(String username, String password, String name, String carName, String licensePlate);
 }

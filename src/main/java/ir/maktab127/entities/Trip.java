@@ -2,7 +2,7 @@ package ir.maktab127.entities;
 
 public class Trip {
 
-    private int id;
+    private Long id;
     private Driver driver;
     private Passenger passenger;
     private Location begin;
@@ -24,12 +24,22 @@ public class Trip {
         int ydef=Math.abs(begin.getY()-destination.getY());
         return (xdef+ydef)*1000;
     }
+    public void tripTime()   {
+        int xdef=Math.abs(begin.getX()-destination.getX());
+        int ydef=Math.abs(begin.getY()-destination.getY());
 
-    public int getId() {
+        try {
+            Thread.sleep(  (xdef+ydef)* 1000L);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -71,6 +81,7 @@ public class Trip {
 
     public void setTripStatus(TripStatus tripStatus) {
         this.tripStatus = tripStatus;
+
     }
 
     public double getPrice() {

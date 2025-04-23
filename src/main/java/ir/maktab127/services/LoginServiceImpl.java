@@ -52,7 +52,7 @@ public class LoginServiceImpl implements LoginService{
     }
     
     @Override
-    public void driverRegister(String username, String password, String name, String carName, String licensePlate) {
-        driverRepository.save(new Driver(username, password, name, carName, licensePlate));
+    public Driver driverRegister(String username, String password, String name, String carName, String licensePlate) {
+        return driverRepository.save(new Driver(username, password, name, carName, licensePlate));
     }
 }

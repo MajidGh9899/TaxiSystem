@@ -18,11 +18,11 @@ public class TripRepositoryImpl extends RepositoryImpl implements TripRepository
     }
 
     @Override
-    public void save(Trip trip) throws SQLException {
+    public Trip save(Trip trip) throws SQLException {
 
-        try(PreparedStatement statement=connection.prepareStatement("insert into trip (passenger_id, price, begin, destination,status) values (?,?,?,?,?)")){
+        try(PreparedStatement statement=connection.prepareStatement("insert into trip (passenger_id, price, begin, destination,status) values (?,?,?,?,?)" , Statement.RETURN_GENERATED_KEYS )){
 
-            statement.setInt(1,trip.getPassenger().getId());
+            statement.setLong(1,trip.getPassenger().getId());
 
 
             statement.setDouble(2,trip.getPrice());
@@ -32,7 +32,7 @@ public class TripRepositoryImpl extends RepositoryImpl implements TripRepository
                 prep.executeUpdate();
                 ResultSet generatedKeys = prep.getGeneratedKeys();
                 if(generatedKeys.next()) {
-                    statement.setInt(3, generatedKeys.getInt(1));
+                    statement.setLong(3, generatedKeys.getLong(1));
                 }
                     prep.setInt(1, trip.getDestination().getX());
                     prep.setInt(2, trip.getDestination().getY());
@@ -40,28 +40,33 @@ public class TripRepositoryImpl extends RepositoryImpl implements TripRepository
                 generatedKeys = prep.getGeneratedKeys();
                 if(generatedKeys.next()) {
 
-                statement.setInt(4,generatedKeys.getInt(1));
+                statement.setLong(4,generatedKeys.getLong(1));
                 }
 
             }
 
-            statement.setString(5,trip.getTripStatus().name());
+            statement.setString(5,trip.getTripStatus().toString());
             statement.executeUpdate();
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if(generatedKeys.next()) {
+                trip.setId(generatedKeys.getLong(1));
+
+            }
 
 
 
 
         }
-
+    return   trip;
     }
 
     @Override
     public void update(Trip trip) throws SQLException {
 
         try(PreparedStatement statement=connection.prepareStatement("update trip set driver_id=?,status=? where id=?")){
-            statement.setInt(1,trip.getDriver().getId());
-            statement.setString(2,trip.getTripStatus().name());
-            statement.setInt(3,trip.getId());
+            statement.setLong(1,trip.getDriver().getId());
+            statement.setString(2,trip.getTripStatus().toString());
+            statement.setLong(3,trip.getId());
             statement.executeUpdate();
 
 
@@ -71,47 +76,47 @@ public class TripRepositoryImpl extends RepositoryImpl implements TripRepository
 
     }
 
+//    @Override
+//    public List<tripRecord> getAllWaitingTrips() {
+//        List<tripRecord> trips=new ArrayList<>();
+//        try(Statement statement=  connection.createStatement()){
+//            ResultSet resultSet = statement.executeQuery("select t.id,p.name,l.x,l.y,l2.x,l2.y,t.price from trip t  join passengers p on t.passenger_id=p.id join location l on t.begin=l.id and t.destination=l.id join location l2 on t.destination=l2.id\n" +
+//                    "    where t.status='WAITING'\n" +
+//                    "    and p.isTrip=false\n" +
+//                    "    and t.driver_id is null");
+//
+//
+//
+//
+//            while(resultSet.next()){
+//
+//                tripRecord  tripRecord=new tripRecord(resultSet.getLong("t.id"),
+//                        resultSet.getString("p.name"),
+//                        new Location(resultSet.getInt("l.x"),resultSet.getInt("l.y")),
+//                        new Location(resultSet.getInt("l2.x"),resultSet.getInt("l2.y")),
+//                        resultSet.getDouble("t.price"));
+//
+//                trips.add(tripRecord);
+//
+//
+//
+//            }
+//
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return trips;
+//    }
+
     @Override
-    public List<tripRecord> getAllWaitingTrips() {
-        List<tripRecord> trips=new ArrayList<>();
-        try(Statement statement=  connection.createStatement()){
-            ResultSet resultSet = statement.executeQuery("select t.id,p.name,l.x,l.y,l2.x,l2.y,t.price from trip t  join passengers p on t.passenger_id=p.id join location l on t.begin=l.id and t.destination=l.id join location l2 on t.destination=l2.id\n" +
-                    "    where t.status='WAITING'\n" +
-                    "    and p.isTrip=false\n" +
-                    "    and t.driver_id is null");
-
-
-
-
-            while(resultSet.next()){
-
-                tripRecord  tripRecord=new tripRecord(resultSet.getInt("t.id"),
-                        resultSet.getString("p.name"),
-                        new Location(resultSet.getInt("l.x"),resultSet.getInt("l.y")),
-                        new Location(resultSet.getInt("l2.x"),resultSet.getInt("l2.y")),
-                        resultSet.getDouble("t.price"));
-
-                trips.add(tripRecord);
-
-
-
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return trips;
-    }
-
-    @Override
-    public Trip getById(int id) throws SQLException {
+    public Trip getById(Long id) throws SQLException {
         Trip trip=new Trip(null,null,null);
 
         try(PreparedStatement statement=connection.prepareStatement("select * from trip t join public.passengers p on p.id = t.passenger_id join drivers d on t.driver_id = d.id join location l on l.id = t.begin join location l2 on l2.id = t.destination  where id=?")){
-            statement.setInt(1,id);
+            statement.setLong(1,id);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()){
-                trip.setId(resultSet.getInt("id"));
+                trip.setId(resultSet.getLong("id"));
                 trip.setPrice(resultSet.getDouble("price"));
                 trip.setTripStatus(TripStatus.valueOf(resultSet.getString("status")));
                 trip.setBegin(new Location(resultSet.getInt("l.x"),resultSet.getInt("l.y")));

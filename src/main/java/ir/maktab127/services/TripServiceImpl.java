@@ -14,7 +14,7 @@ import java.util.List;
 
 public class TripServiceImpl implements TripService {
     private final TripRepository tripRepository;
-    List<tripRecord> trips;
+    List<Trip> trips;
 
 
     public TripServiceImpl(Connection connection) {
@@ -30,12 +30,12 @@ public class TripServiceImpl implements TripService {
         Trip trip = new Trip(passenger, begin, destination);
         try {
 
-            tripRepository.save(trip);
-            synchronized (trips) {
+            trip=tripRepository.save(trip);
+            synchronized (this) {
                 if(trips.size()==1){
                     wait();
                 }
-                trips.add(  new tripRecord(trip.getId(),passenger.getName(),begin,destination,trip.getPrice()));
+                trips.add(  trip);
                 System.out.println("passenger "+passenger.getName()+" created trip "+trip.getId()+" from "+begin.getX()+" "+begin.getY()+" to "+destination.getX()+" "+destination.getY()+" with price "+trip.getPrice());
                 notifyAll();
             }
@@ -81,19 +81,28 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public void acceptTrip( Driver driver) throws InterruptedException, SQLException {
-        synchronized (trips) {
+        while(true){
+        synchronized (this) {
             if (trips.isEmpty()) {
+
                 wait();
             }
-            tripRecord trip = trips.removeFirst();
-            Trip resultTrip = tripRepository.getById(trip.id());
-            resultTrip.setDriver(driver);
-            resultTrip.setTripStatus(TripStatus.ONTRIP);
-            tripRepository.update(resultTrip);
-            driver.setOnTrip(true);
-            System.out.println("driver "+driver.getName()+" accepted trip "+trip.id()+" from "+trip.passengerName()+" to "+" with price "+trip.price()+"");
-            notifyAll();
+            Trip trip = trips.removeFirst();
 
+
+            trip.setDriver(driver);
+            trip.setTripStatus(TripStatus.ONTRIP);
+            tripRepository.update(trip);
+            driver.setOnTrip(true);
+            System.out.println("driver " + driver.getName() + " accepted trip " + trip.getId() + " from " + trip.getPassenger().getName() + " to " + " with price " + trip.getPrice() + "");
+            notifyAll();
+            trip.tripTime();
+            trip.setTripStatus(TripStatus.FINISHED);
+            tripRepository.update(trip);
+            driver.setOnTrip(false);
+            System.out.println("driver " + driver.getName() + " finished trip " + trip.getId() + " from " + trip.getPassenger().getName() + " to " + " with price " + trip.getPrice() + "");
+
+        }
         }
 
 

@@ -2,10 +2,7 @@ package ir.maktab127.repository;
 
 import ir.maktab127.entities.Driver;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Optional;
 
 public class DriverRepositoryImpl extends RepositoryImpl implements DriverRepository{
@@ -24,6 +21,7 @@ public class DriverRepositoryImpl extends RepositoryImpl implements DriverReposi
             Driver driver=null;
             if(resultSet.next()){
                 driver=new Driver(resultSet.getString("username"),resultSet.getString("password"),resultSet.getString("name"),resultSet.getString("car_name"),resultSet.getString("licence_plate"));
+                driver.setId(resultSet.getLong("id"));
 
             }
             return Optional.ofNullable(driver);
@@ -38,18 +36,23 @@ public class DriverRepositoryImpl extends RepositoryImpl implements DriverReposi
     }
 
     @Override
-    public void save(Driver driver) {
-        try(PreparedStatement statement=connection.prepareStatement("insert into drivers values (?,?,?,?,?,?)")){
-            statement.setInt(1,driver.getId());
-            statement.setString(2,driver.getUserName());
-            statement.setString(3,driver.getPassword());
-            statement.setString(4,driver.getName());
-            statement.setString(5,driver.getCarName());
-            statement.setString(6,driver.getLicensePlate());
+    public Driver save(Driver driver) {
+        try(PreparedStatement statement=connection.prepareStatement("insert into drivers (username,password,name,car_name,licence_plate) values (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS )){
+
+            statement.setString(1,driver.getUserName());
+            statement.setString(2,driver.getPassword());
+            statement.setString(3,driver.getName());
+            statement.setString(4,driver.getCarName());
+            statement.setString(5,driver.getLicensePlate());
+            statement.executeUpdate();
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if(generatedKeys.next()) {
+                driver.setId(generatedKeys.getLong(1));
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
+    return driver;
     }
 }

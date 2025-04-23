@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface TripRepository extends Repository {
-      record tripRecord(int id , String passengerName , Location begin, Location destination, double price){}
+//      record tripRecord(Long id , String passengerName , Location begin, Location destination, double price){}
 
-     void save(Trip trip) throws SQLException;
+     Trip save(Trip trip) throws SQLException;
      void update(Trip trip) throws SQLException;
-     List<tripRecord> getAllWaitingTrips();
-     Trip getById(int id) throws SQLException;
+//     List<tripRecord> getAllWaitingTrips();
+     Trip getById(Long id) throws SQLException;
 
 
 

@@ -1,6 +1,7 @@
 package ir.maktab127;
 
 import java.sql.SQLException;
+import java.util.Random;
 
 import ir.maktab127.config.ApplicationContext;
 import ir.maktab127.entities.Driver;
@@ -10,6 +11,10 @@ import ir.maktab127.services.LoginService;
 import ir.maktab127.services.TripService;
 
 public class Main {
+    public static int randomXY( ) {
+        Random rand=new Random();
+        return rand.nextInt(24);
+    }
     public static void main(String[] args) throws SQLException, InterruptedException {
         ApplicationContext applicationContext = ApplicationContext.getInstance();
 
@@ -19,7 +24,7 @@ public class Main {
                 LoginService loginService = applicationContext.getLoginService();
                 Passenger passenger = loginService.passengerLogin("ali", "123");
                 TripService tripService = applicationContext.getTripService();
-                tripService.create(passenger, new Location(5, 4), new Location(10, 10));
+                tripService.create(passenger, new Location(5, 4), new Location(randomXY(), randomXY()));
 
 
             } catch (SQLException e) {
@@ -35,7 +40,7 @@ public class Main {
                         LoginService loginService = applicationContext.getLoginService();
                         Passenger passenger = loginService.passengerLogin("sara", "145");
                         TripService tripService = applicationContext.getTripService();
-                        tripService.create(passenger,new Location(1,1),new Location(8,13));
+                        tripService.create(passenger,new Location(1,1),new Location(randomXY(),randomXY()));
 
 
                     } catch (SQLException e) {

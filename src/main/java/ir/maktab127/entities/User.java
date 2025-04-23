@@ -2,7 +2,7 @@ package ir.maktab127.entities;
 
 public class User {
 
-    private int id;
+    private Long id;
     private String name;
     private String userName;
     private String password;
@@ -27,11 +27,11 @@ public class User {
         this.userName = userName;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface DriverRepository {
     Optional<Driver> getByUserName(String username) throws SQLException;
 
-    void save(Driver driver);
+    Driver save(Driver driver);
 }

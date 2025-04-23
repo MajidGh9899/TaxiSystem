@@ -23,6 +23,7 @@ public class PassengerRepositoryImpl extends RepositoryImpl implements Passenger
             Passenger passenger=null;
             if(resultSet.next()){
                  passenger=new Passenger(resultSet.getString("username"),resultSet.getString("password"),resultSet.getString("name"));
+                 passenger.setId(resultSet.getLong("id"));
 
             }
             return Optional.ofNullable(passenger);
@@ -36,7 +37,7 @@ public class PassengerRepositoryImpl extends RepositoryImpl implements Passenger
     public void save(Passenger passenger) {
 
         try(PreparedStatement statement=connection.prepareStatement("insert into passengers values (?,?,?,?,?)")){
-            statement.setInt(1,passenger.getId());
+            statement.setLong(1,passenger.getId());
             statement.setString(2,passenger.getUserName());
             statement.setString(3,passenger.getPassword());
             statement.setString(4,passenger.getName());
